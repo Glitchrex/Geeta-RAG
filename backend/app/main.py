@@ -49,9 +49,9 @@ def health() -> dict:
 @app.post("/documents", response_model=DocumentOut, status_code=202)
 def upload_document(file: UploadFile, background_tasks: BackgroundTasks):
     if file.content_type != "application/pdf":
-        raise HTTPException(status_code=415, details="Only PDF files are supported")
+        raise HTTPException(status_code=415, detail="Only PDF files are supported")
     if file.size and file.size > config.MAX_UPLOAD_MB * 1024 * 1024:
-        raise HTTPException(status_code=413,details=f"File is Larger than {config.MAX_UPLOAD_MB} MB")
+        raise HTTPException(status_code=413, detail=f"File is Larger than {config.MAX_UPLOAD_MB} MB")
 
     document = repository.create_document(file.filename or "document.pdf")
     path = Path(config.UPLOAD_DIR) / f"{document['id']}.pdf"
@@ -69,22 +69,21 @@ def get_document(document_id: UUID):
     return document
 
 @app.post("/chat")
-def chat(request:ChatRequest):
+def chat(request: ChatRequest):
     document = repository.get_document(request.document_id)
     if document is None:
         raise HTTPException(status_code=404, detail="Document not found")
-    if document["status"] != "ready":
-        raise HTTPException(status_code=409,detail=f"Document is {document['status']}, not ready")
+    if document["status"] != "done":
+        raise HTTPException(status_code=409, detail=f"Document is {document['status']}, not ready")
 
     started = time.perf_counter()
     chunks = search(request.document_id, request.question, config.TOP_K)
     retrieval_ms = (time.perf_counter() - started) * 1000
 
-
     def event_stream():
         sources = [
-            {"n": n, "page":c["page"], "preview": c["content"][:200]}
-            for n,c in enumerate(chunks, start=1)
+            {"n": n, "page": c["page"], "preview": c["content"][:200]}
+            for n, c in enumerate(chunks, start=1)
         ]
         yield server_sent_event(sources, event="sources")
         try:
@@ -92,10 +91,11 @@ def chat(request:ChatRequest):
                 yield server_sent_event(token)
         except Exception:
             log.exception("Generation Failed")
-            yield server_sent_event("Answer generation failed. Check that Ollama is running.",event="error")
+            yield server_sent_event("Answer generation failed. Check that Ollama is running.", event="error")
+        finally:
             total_ms = (time.perf_counter() - started) * 1000
-            log.info("chat doc = %s chunks=%d retrieval_ms = %.0f total_ms=%.0f",
+            log.info("chat doc=%s chunks=%d retrieval_ms=%.0f total_ms=%.0f",
                      request.document_id, len(chunks), retrieval_ms, total_ms)
             yield server_sent_event({}, event="done")
 
-        return StreamingResponse(event_stream(), media_ype="text/event-stream")
+    return StreamingResponse(event_stream(), media_type="text/event-stream")

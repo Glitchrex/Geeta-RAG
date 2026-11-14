@@ -16,8 +16,9 @@ def inges_document(document_id: UUID, path: str) -> None:
         for page, page_text in parse_pdf(path):
             for chunk in chunk_text(page_text, config.CHUNK_MAX_CHARS, config.CHUNK_OVERLAP_CHARS):
                 records.append({"page": page, "chunk_index": len(records), "content": chunk})
-                if not records:
-                    raise ValueError("No text found. Scanned PDFs need OCR.")
+
+        if not records:
+            raise ValueError("No text found. Scanned PDFs need OCR.")
 
         for start in range(0, len(records), config.EMBED_BATCH_SIZE):
             batch = records[start:start + config.EMBED_BATCH_SIZE]

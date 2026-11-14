@@ -14,17 +14,17 @@ def get_document(document_id: UUID) -> dict | None:
             "SELECT * FROM documents WHERE id = %s", (document_id,)
         ).fetchone()
 
-def set_status(document_id: UUID, status: str):
+def set_status(document_id: UUID, status: str, error: str | None = None) -> None:
     with pool.connection() as conn:
         conn.execute(
-            "UPDATE documents SET status = %s WHERE id = %s",
-            (status, document_id)
+            "UPDATE documents SET status = %s, error = %s WHERE id = %s",
+            (status, error, document_id)
         )
 
 def set_progress(document_id: UUID, embedded: int, total: int) -> None:
     with pool.connection() as conn:
         conn.execute(
-            "UPDATE documents SETP embedded_chunks = %s, total_chunks = %s WHERE id = %s",
+            "UPDATE documents SET embedded_chunks = %s, total_chunks = %s WHERE id = %s",
             (embedded, total, document_id)
         )
 

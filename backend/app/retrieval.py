@@ -2,7 +2,7 @@ from uuid import UUID
 from app.db import pool
 from app.embeddings import embed_query
 
-VECCTOR_SQL = """
+VECTOR_SQL = """
 SELECT id, page, chunk_index, content,
        1 - (embedding <=> %(qvec)s) AS score
 FROM chunks
@@ -16,7 +16,7 @@ with q AS (
     SELECT replace(plainto_tsquery('english',%(qtext)s)::text, '&', '|')::tsquery AS query),
     semantic AS (
         SELECT id, 
-            ROW_NUMBER OVER (ORDER BY embedding <=> %(qvec)s) AS Rank
+            ROW_NUMBER() OVER (ORDER BY embedding <=> %(qvec)s) AS rank
         From  chunks
         WHERE document_id = %(doc_id)s
         ORDER BY embedding <=> %(qvec)s
@@ -41,7 +41,7 @@ with q AS (
     LIMIT %(k)s
     """
 
-def search(document_id: UUID, question: str, k:int, hybrid:bool = True) -> list[dict]:
+def search(document_id: UUID, question: str, k: int, hybrid: bool = True) -> list[dict]:
     params = {"qvec": embed_query(question), "doc_id": document_id, "qtext": question, "k": k}
     with pool.connection() as conn:
-        return conn.execute(HYBRID_SQL if hybrid else VECCTOR_SQL, params).fetchall()
+        return conn.execute(HYBRID_SQL if hybrid else VECTOR_SQL, params).fetchall()
