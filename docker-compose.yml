@@ -1,0 +1,14 @@
+services:
+    db:
+        image: pgvector/pgvector:pg16 #pgvector - postgres vector version 16
+        environment:
+            POSTGRES_USER: shikhar
+            POSTGRES_PASSWORD: pasword101
+            POSTGRES_DB: geeta_rag 
+        ports: ["5432:5432"]
+        volumes:
+            - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+            - pgdata:/var/lib/postgressql/data
+
+volumes:
+        pgdata:
