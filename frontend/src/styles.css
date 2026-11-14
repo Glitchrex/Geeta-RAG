@@ -1,0 +1,30 @@
+:root {
+  color-scheme: light dark;
+  --ink: light-dark(#1c2330, #e4e8ef);
+  --paper: light-dark(#fbfbf9, #14171d);
+  --muted: light-dark(#5d6677, #98a1b3);
+  --rule: light-dark(#dcdfe5, #2a303b);
+  --accent: light-dark(#1d5bb8, #86b4ff);
+  --error: light-dark(#b42318, #ff8a80);
+  font: 17px/1.6 "Iowan Old Style", Georgia, serif;
+  color: var(--ink);
+  background: var(--paper);
+}
+body { margin: 0; }
+main { max-width: 42rem; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; }
+h1 { font-size: 2.2rem; line-height: 1.1; margin: 0 0 0.5rem; }
+h2 { font-size: 1.15rem; margin: 0 0 0.75rem; }
+section { border-top: 1px solid var(--rule); padding-top: 1.25rem; margin-top: 1.75rem; }
+.hint { color: var(--muted); margin: 0; }
+.msg { margin: 1.25rem 0; }
+.msg .text { white-space: pre-wrap; margin: 0; }
+.msg.user .text { color: var(--muted); font-style: italic; }
+.sources { margin-top: 0.4rem; font-size: 0.85rem; color: var(--muted); }
+.sources span { margin-right: 0.75rem; border-bottom: 1px dotted var(--muted); cursor: help; }
+.ask { display: flex; gap: 0.5rem; margin-top: 1.25rem; }
+.ask input { flex: 1; }
+input, button { font: inherit; font-size: 0.95rem; padding: 0.55rem 0.8rem; border-radius: 6px; border: 1px solid var(--rule); background: transparent; color: inherit; }
+button { background: var(--accent); border-color: var(--accent); color: var(--paper); cursor: pointer; }
+:disabled { opacity: 0.5; cursor: default; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.error { color: var(--error); }
