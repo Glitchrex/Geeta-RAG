@@ -218,3 +218,11 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Angular frontend
+/frontend/node_modules/
+/frontend/.angular/
+/frontend/dist/
+/frontend/out-tsc/
+/frontend/coverage/
+/frontend/.nx/
