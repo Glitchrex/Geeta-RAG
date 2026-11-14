@@ -1,6 +1,6 @@
 import { HttpClient, HttpEvent } from "@angular/common/http";
 import { Injectable, inject } from "@angular/core";
-import { Observable } from "../../node_modules/rxjs/dist/types";
+import { Observable } from "rxjs";
 
 const API_URL = "http://localhost:8000";
 
@@ -77,19 +77,24 @@ export class APIService {
         }
     }
 
-    private dispatch(raw:string, handlers:ChatHandlers): void{
+    private dispatch(raw: string, handlers: ChatHandlers): void {
         let event = 'message';
         let data = '';
-        for (const line of raw.split('\n')){
-            if (line.startsWith('event: ')) event = line.slice(7);
-            if (line.startsWith('data: ')) data += line.slice(6);
+        for (const line of raw.split('\n')) {
+            const cleanLine = line.endsWith('\r') ? line.slice(0, -1) : line;
+            if (cleanLine.startsWith('event: ')) event = cleanLine.slice(7).trim();
+            if (cleanLine.startsWith('data: ')) data += cleanLine.slice(6);
         }
-        if(!data) return;
+        if (!data) return;
 
-        const payload = JSON.parse(data);
-        if( event === 'sources' ) handlers.onSources(payload);
-        if (event === 'message ') handlers.onToken(payload);
-        if(event === 'error') handlers.onError(payload);
+        try {
+            const payload = JSON.parse(data);
+            if (event === 'sources') handlers.onSources(payload);
+            if (event === 'message') handlers.onToken(payload);
+            if (event === 'error') handlers.onError(payload);
+        } catch (e) {
+            console.error('Failed to parse SSE payload:', data, e);
+        }
     }
 
 }

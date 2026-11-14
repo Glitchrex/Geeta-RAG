@@ -1,7 +1,7 @@
 import { HttpEventType } from '@angular/common/http';
 import { Component, DestroyRef, Inject, inject, output,signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Subscription, exhaustMap, takeWhile, timer } from '../../../../node_modules/rxjs/dist/types';
+import { Subscription, exhaustMap, takeWhile, timer } from 'rxjs';
 import { APIService, DocumentInfo } from '../../app.service';
 
 

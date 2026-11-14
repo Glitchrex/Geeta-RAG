@@ -98,4 +98,12 @@ def chat(request: ChatRequest):
                      request.document_id, len(chunks), retrieval_ms, total_ms)
             yield server_sent_event({}, event="done")
 
-    return StreamingResponse(event_stream(), media_type="text/event-stream")
+    return StreamingResponse(
+        event_stream(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
+    )
