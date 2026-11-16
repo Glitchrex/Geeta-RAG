@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS chunks (
     page INT NOT NULL,
     content TEXT NOT NULL,
     embedding vector(768) NOT NULL,
-    content_tsv tsvector GENERATED ALWAYS AS (to_tsvector('english', content)) STORED,
+    content_tsv tsvector GENERATED ALWAYS AS (to_tsvector('simple', content)) STORED,
     UNIQUE (document_id, chunk_index)
 );
 

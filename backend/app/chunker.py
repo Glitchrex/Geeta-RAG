@@ -1,4 +1,4 @@
-SEPARATORS = ("\n\n", "\n", ". ", " ") 
+SEPARATORS = ("\n\n", "\n", "। ", ". ", " ")  # । = Hindi danda (sentence end)
 
 def split_text(text: str, max_chars: int, separators: tuple[str, ...] = SEPARATORS) -> list[str]:
     

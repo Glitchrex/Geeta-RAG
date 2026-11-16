@@ -13,7 +13,7 @@ LIMIT %(k)s
 
 HYBRID_SQL = """
 with q AS (
-    SELECT replace(plainto_tsquery('english',%(qtext)s)::text, '&', '|')::tsquery AS query),
+    SELECT replace(plainto_tsquery('simple',%(qtext)s)::text, '&', '|')::tsquery AS query),
     semantic AS (
         SELECT id, 
             ROW_NUMBER() OVER (ORDER BY embedding <=> %(qvec)s) AS rank
